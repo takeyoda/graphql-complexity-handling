@@ -1,0 +1,7 @@
+spring:
+  main:
+    banner-mode: off
+  graphql:
+    graphiql:
+      enabled: true
+      path: /graphiql

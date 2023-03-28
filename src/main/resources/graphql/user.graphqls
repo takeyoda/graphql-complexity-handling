@@ -1,0 +1,28 @@
+extend type Query {
+  users(
+    first: PositiveInt = 10
+    after: String
+  ): UserConnection!
+}
+
+type UserConnection implements Connection {
+  pageInfo: PageInfo!
+  totalCount: Long!
+  edges: [UserEdge!]!
+}
+
+type UserEdge implements Edge {
+  cursor: String!
+  node: User!
+}
+
+type User implements Node {
+  id: ID!
+  name: String!
+  favorites: [Favorite!]!
+}
+
+type Favorite {
+  name: String!
+  description: String!
+}

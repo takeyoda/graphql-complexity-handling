@@ -1,0 +1,64 @@
+plugins {
+  id 'java'
+  id 'idea'
+  id 'org.springframework.boot' version '3.0.5'
+  id 'io.spring.dependency-management' version '1.1.0'
+  id 'net.ltgt.errorprone' version '3.0.1'
+  id 'com.diffplug.spotless' version '6.17.0'
+}
+
+group = 'io.github.takeyoda'
+version = '0.0.1-SNAPSHOT'
+
+java {
+  toolchain {
+    languageVersion = JavaLanguageVersion.of(17)
+  }
+}
+
+repositories {
+  mavenCentral()
+}
+
+dependencies {
+  implementation 'org.springframework.boot:spring-boot-starter-graphql'
+  implementation 'org.springframework.boot:spring-boot-starter-webflux'
+  implementation 'org.springframework.data:spring-data-commons'
+  implementation 'com.graphql-java:graphql-java-extended-scalars:20.0'
+  implementation 'com.google.guava:guava:31.1-jre'
+  implementation 'io.projectreactor.tools:blockhound:1.0.7.RELEASE'
+  compileOnly 'org.projectlombok:lombok:1.18.26'
+  annotationProcessor 'org.projectlombok:lombok:1.18.26'
+  implementation 'org.slf4j:slf4j-api:2.0.6'
+  implementation 'ch.qos.logback:logback-core:1.4.6'
+  implementation 'ch.qos.logback:logback-classic:1.4.6'
+  errorprone 'com.google.errorprone:error_prone_core:2.+'
+}
+
+tasks.named('test') {
+  useJUnitPlatform()
+}
+
+spotless {
+  java {
+    googleJavaFormat()
+    trimTrailingWhitespace()
+    endWithNewline()
+    removeUnusedImports()
+  }
+}
+tasks.compileJava.dependsOn spotlessApply
+
+tasks.withType(JavaCompile).configureEach {
+  options.errorprone {
+    disableWarningsInGeneratedCode = true
+    disable('MissingSummary')
+  }
+}
+
+bootRun {
+  jvmArgs = [
+    // https://github.com/reactor/BlockHound/issues/33
+    '-XX:+AllowRedefinitionToAddDeleteMethods'
+  ]
+}
