@@ -5,6 +5,7 @@ plugins {
   id 'io.spring.dependency-management' version '1.1.0'
   id 'net.ltgt.errorprone' version '3.0.1'
   id 'com.diffplug.spotless' version '6.17.0'
+  id 'org.graalvm.buildtools.native' version '0.9.27'
 }
 
 group = 'io.github.takeyoda'
@@ -32,6 +33,7 @@ dependencies {
   implementation 'org.slf4j:slf4j-api:2.0.6'
   implementation 'ch.qos.logback:logback-core:1.4.6'
   implementation 'ch.qos.logback:logback-classic:1.4.6'
+  // implementation 'org.graalvm.sdk:nativeimage:23.1.0'
   errorprone 'com.google.errorprone:error_prone_core:2.+'
 }
 
@@ -47,7 +49,7 @@ spotless {
     removeUnusedImports()
   }
 }
-tasks.compileJava.dependsOn spotlessApply
+tasks.check.dependsOn spotlessApply
 
 tasks.withType(JavaCompile).configureEach {
   options.errorprone {
@@ -59,6 +61,12 @@ tasks.withType(JavaCompile).configureEach {
 bootRun {
   jvmArgs = [
     // https://github.com/reactor/BlockHound/issues/33
+    '-XX:+AllowRedefinitionToAddDeleteMethods'
+  ]
+}
+
+tasks.withType(org.springframework.boot.gradle.tasks.aot.ProcessAot).all {
+  jvmArgs += [
     '-XX:+AllowRedefinitionToAddDeleteMethods'
   ]
 }
